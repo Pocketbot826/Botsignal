@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Advanced Signal Engine</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ProSignal">
+<style>
+body{font-family:Arial;background:#020617;color:#fff;margin:0;padding:16px}
+h1{text-align:center;font-size:22px}
+.card{background:#020617;border:1px solid #1e293b;border-radius:14px;padding:14px;margin-bottom:12px}
+.good{color:#22c55e;font-weight:bold}
+.bad{color:#ef4444;font-weight:bold}
+.mid{color:#eab308;font-weight:bold}
+button,input,select{width:100%;padding:10px;border-radius:8px;border:none;margin-top:8px}
+button{background:#2563eb;color:#fff;font-weight:bold}
+</style>
+</head>
+<body>
+<h1>🚀 Advanced Signal Engine</h1>
+
+<div class="card">
+<p>Trend (EMA): <span id="trend">--</span></p>
+<p>Momentum (RSI): <span id="rsi">--</span></p>
+<p>Volatility (ATR): <span id="atr">--</span></p>
+<p>Price Action: <span id="pa">--</span></p>
+<hr>
+<p>CONFIDENCE: <span id="conf">0%</span></p>
+<p>SIGNAL: <span id="signal">WAIT</span></p>
+</div>
+
+<div class="card">
+<h3>🔐 Manual Analysis Input</h3>
+<input id="price" placeholder="Current Price" />
+<input id="ema20" placeholder="EMA 20" />
+<input id="ema50" placeholder="EMA 50" />
+<input id="ema200" placeholder="EMA 200" />
+<input id="rsiVal" placeholder="RSI (14)" />
+<input id="atrVal" placeholder="ATR" />
+<select id="candle">
+<option value="none">Candle Pattern</option>
+<option value="bull">Bullish Rejection</option>
+<option value="bear">Bearish Rejection</option>
+</select>
+<button onclick="analyze()">Analyze Market</button>
+</div>
+
+<script>
+function analyze(){
+let score=0;
+let trendType='SIDEWAYS';
+let ema20=+ema20.value, ema50=+ema50.value, ema200=+ema200.value;
+let priceVal=+price.value;
+let rsi=+rsiVal.value;
+let atr=+atrVal.value;
+let candleP=candle.value;
+
+// Trend
+if(priceVal>ema20 && ema20>ema50 && ema50>ema200){
+trendType='UPTREND';score+=30;trend.textContent='UPTREND';trend.className='good';
+}else if(priceVal<ema20 && ema20<ema50 && ema50<ema200){
+trendType='DOWNTREND';score+=30;trend.textContent='DOWNTREND';trend.className='good';
+}else{
+trend.textContent='SIDEWAYS';trend.className='mid';
+}
+
+// RSI
+if(rsi<=30){score+=20;rsiText('OVERSOLD','good');}
+else if(rsi>=70){score+=20;rsiText('OVERBOUGHT','good');}
+else{rsiText('NEUTRAL','mid');}
+
+// ATR
+if(atr>0){score+=15;atrText('GOOD','good');}
+else{atrText('LOW','mid');}
+
+// Price Action
+if(candleP!=='none'){score+=20;paText(candleP.toUpperCase(),'good');}
+else{paText('NONE','mid');}
+
+// Final
+conf.textContent=score+'%';
+if(score>=75){
+signal.textContent=(trendType==='UPTREND'?'BUY':'SELL');
+signal.className='good';
+}else{
+signal.textContent='WAIT';
+signal.className='mid';
+}
+}
+
+function rsiText(t,c){rsi.textContent=t;rsi.className=c;}
+function atrText(t,c){atr.textContent=t;atr.className=c;}
+function paText(t,c){pa.textContent=t;pa.className=c;}
+</script>
+
+<p style="text-align:center;opacity:.6">Advanced multi-confirmation • Manual • iOS safe</p>
+</body>
+</html>
